@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -10,96 +11,213 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ─── TENANT ────────────────────────────────────────────────────────────────
+
 model Tenant {
-  id          String   @id @default(uuid())
+  id          String   @id @default(cuid())
   name        String
   domain      String?  @unique
   plan        String   @default("BASIC")
+  isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   deletedAt   DateTime?
 
-  users       User[]
-  patients    Patient[]
-  doctors     Doctor[]
+  users        User[]
+  patients     Patient[]
+  doctors      Doctor[]
   appointments Appointment[]
+  bills        Bill[]
+  medicines    Medicine[]
+
+  @@map("tenants")
 }
+
+// ─── USER ───────────────────────────────────────────────────────────────────
 
 model User {
-  id          String   @id @default(uuid())
-  tenantId    String
-  tenant      Tenant   @relation(fields: [tenantId], references: [id])
-  email       String   @unique
-  password    String
-  name        String
-  role        Role     @default(RECEPTIONIST)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  deletedAt   DateTime?
+  id         String   @id @default(cuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id])
+  email      String   @unique
+  password   String
+  name       String
+  phone      String?
+  role       Role     @default(RECEPTIONIST)
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deletedAt  DateTime?
 
   @@index([tenantId, createdAt(sort: Desc)])
+  @@map("users")
 }
 
+// ─── PATIENT ────────────────────────────────────────────────────────────────
+
 model Patient {
-  id          String   @id @default(uuid())
+  id          String   @id @default(cuid())
   tenantId    String
   tenant      Tenant   @relation(fields: [tenantId], references: [id])
   name        String
   phone       String
+  email       String?
   abhaId      String?
-  gender      String
+  gender      Gender
   dob         DateTime?
   bloodGroup  String?
-  
+  address     String?
+  photoUrl    String?
+  qrCode      String?
+
   appointments Appointment[]
-  
-  createdBy   String?
-  updatedBy   String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  deletedAt   DateTime?
+  bills        Bill[]
+
+  createdBy  String?
+  updatedBy  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deletedAt  DateTime?
 
   @@index([tenantId, createdAt(sort: Desc)])
+  @@index([tenantId, phone])
+  @@map("patients")
 }
+
+// ─── DOCTOR ─────────────────────────────────────────────────────────────────
 
 model Doctor {
-  id             String   @id @default(uuid())
-  tenantId       String
-  tenant         Tenant   @relation(fields: [tenantId], references: [id])
-  name           String
-  specialization String
-  phone          String?
-  email          String?
-  
-  appointments   Appointment[]
-  
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  deletedAt      DateTime?
+  id              String   @id @default(cuid())
+  tenantId        String
+  tenant          Tenant   @relation(fields: [tenantId], references: [id])
+  name            String
+  specialization  String
+  phone           String?
+  email           String?
+  registrationNo  String?
+  consultFee      Float    @default(0)
+  isActive        Boolean  @default(true)
+
+  appointments    Appointment[]
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deletedAt  DateTime?
 
   @@index([tenantId, createdAt(sort: Desc)])
+  @@map("doctors")
 }
+
+// ─── APPOINTMENT ────────────────────────────────────────────────────────────
 
 model Appointment {
-  id          String   @id @default(uuid())
-  tenantId    String
-  tenant      Tenant   @relation(fields: [tenantId], references: [id])
-  patientId   String
-  patient     Patient  @relation(fields: [patientId], references: [id])
-  doctorId    String
-  doctor      Doctor   @relation(fields: [doctorId], references: [id])
-  
+  id         String   @id @default(cuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id])
+  patientId  String
+  patient    Patient  @relation(fields: [patientId], references: [id])
+  doctorId   String
+  doctor     Doctor   @relation(fields: [doctorId], references: [id])
+
   date        DateTime
+  timeSlot    String?
   status      AppointmentStatus @default(SCHEDULED)
+  type        AppointmentType   @default(REGULAR)
   reason      String?
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  deletedAt   DateTime?
+  notes       String?
+  queueNo     Int?
+  tokenNo     String?
+
+  createdBy  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deletedAt  DateTime?
 
   @@index([tenantId, doctorId, date, status])
-  @@index([tenantId, createdAt(sort: Desc)])
+  @@index([tenantId, patientId, createdAt(sort: Desc)])
+  @@map("appointments")
 }
+
+// ─── BILLING ────────────────────────────────────────────────────────────────
+
+model Bill {
+  id           String      @id @default(cuid())
+  tenantId     String
+  tenant       Tenant      @relation(fields: [tenantId], references: [id])
+  patientId    String
+  patient      Patient     @relation(fields: [patientId], references: [id])
+  billNo       String
+  totalAmount  Float
+  paidAmount   Float       @default(0)
+  discount     Float       @default(0)
+  status       BillStatus  @default(PENDING)
+  paymentMode  String?
+  notes        String?
+
+  items        BillItem[]
+
+  createdBy  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deletedAt  DateTime?
+
+  @@index([tenantId, patientId, createdAt(sort: Desc)])
+  @@map("bills")
+}
+
+model BillItem {
+  id          String  @id @default(cuid())
+  billId      String
+  bill        Bill    @relation(fields: [billId], references: [id])
+  description String
+  quantity    Int     @default(1)
+  unitPrice   Float
+  total       Float
+
+  @@map("bill_items")
+}
+
+// ─── PHARMACY ───────────────────────────────────────────────────────────────
+
+model Medicine {
+  id           String   @id @default(cuid())
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id])
+  name         String
+  genericName  String?
+  category     String?
+  unit         String   @default("TABLET")
+  mrp          Float    @default(0)
+  stock        Int      @default(0)
+  minStock     Int      @default(10)
+  isActive     Boolean  @default(true)
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deletedAt  DateTime?
+
+  @@index([tenantId, name])
+  @@map("medicines")
+}
+
+// ─── AUDIT ───────────────────────────────────────────────────────────────────
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  tenantId   String
+  userId     String?
+  action     String
+  entity     String
+  entityId   String
+  changes    Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  @@index([tenantId, entity, entityId, createdAt(sort: Desc)])
+  @@map("audit_logs")
+}
+
+// ─── ENUMS ───────────────────────────────────────────────────────────────────
 
 enum Role {
   SUPER_ADMIN
@@ -112,6 +230,12 @@ enum Role {
   BILLING_STAFF
 }
 
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
 enum AppointmentStatus {
   SCHEDULED
   WAITING
@@ -119,4 +243,19 @@ enum AppointmentStatus {
   COMPLETED
   CANCELLED
   NO_SHOW
+}
+
+enum AppointmentType {
+  REGULAR
+  EMERGENCY
+  FOLLOW_UP
+  TELECONSULT
+}
+
+enum BillStatus {
+  PENDING
+  PARTIAL
+  PAID
+  REFUNDED
+  CANCELLED
 }
