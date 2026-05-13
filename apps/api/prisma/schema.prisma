@@ -1,0 +1,122 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id          String   @id @default(uuid())
+  name        String
+  domain      String?  @unique
+  plan        String   @default("BASIC")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  users       User[]
+  patients    Patient[]
+  doctors     Doctor[]
+  appointments Appointment[]
+}
+
+model User {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  email       String   @unique
+  password    String
+  name        String
+  role        Role     @default(RECEPTIONIST)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  @@index([tenantId, createdAt(sort: Desc)])
+}
+
+model Patient {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  name        String
+  phone       String
+  abhaId      String?
+  gender      String
+  dob         DateTime?
+  bloodGroup  String?
+  
+  appointments Appointment[]
+  
+  createdBy   String?
+  updatedBy   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  @@index([tenantId, createdAt(sort: Desc)])
+}
+
+model Doctor {
+  id             String   @id @default(uuid())
+  tenantId       String
+  tenant         Tenant   @relation(fields: [tenantId], references: [id])
+  name           String
+  specialization String
+  phone          String?
+  email          String?
+  
+  appointments   Appointment[]
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  deletedAt      DateTime?
+
+  @@index([tenantId, createdAt(sort: Desc)])
+}
+
+model Appointment {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  patientId   String
+  patient     Patient  @relation(fields: [patientId], references: [id])
+  doctorId    String
+  doctor      Doctor   @relation(fields: [doctorId], references: [id])
+  
+  date        DateTime
+  status      AppointmentStatus @default(SCHEDULED)
+  reason      String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  @@index([tenantId, doctorId, date, status])
+  @@index([tenantId, createdAt(sort: Desc)])
+}
+
+enum Role {
+  SUPER_ADMIN
+  HOSPITAL_ADMIN
+  DOCTOR
+  NURSE
+  RECEPTIONIST
+  PHARMACIST
+  LAB_TECH
+  BILLING_STAFF
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  WAITING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
