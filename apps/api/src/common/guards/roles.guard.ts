@@ -7,6 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { Role } from '@prisma/client';
 import { ROLES_KEY } from '../decorators/roles.decorator';
+import { PERMISSIONS_KEY } from '../decorators/permissions.decorator';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -18,7 +19,12 @@ export class RolesGuard implements CanActivate {
       context.getClass(),
     ]);
 
-    if (!requiredRoles || requiredRoles.length === 0) {
+    const requiredPermissions = this.reflector.getAllAndOverride<string[]>(PERMISSIONS_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    if (!requiredRoles && !requiredPermissions) {
       return true;
     }
 
@@ -28,13 +34,21 @@ export class RolesGuard implements CanActivate {
       throw new ForbiddenException('Access denied');
     }
 
-    const hasRole = requiredRoles.includes(user.role);
-    if (!hasRole) {
-      throw new ForbiddenException(
-        `Access denied. Required roles: ${requiredRoles.join(', ')}`,
-      );
+    // Role check (Old logic kept for compatibility)
+    if (requiredRoles && requiredRoles.length > 0) {
+      const hasRole = requiredRoles.includes(user.role);
+      if (hasRole) return true;
     }
 
-    return true;
+    // Permission check (New logic)
+    if (requiredPermissions && requiredPermissions.length > 0) {
+      // In real app: const userPermissions = await this.userService.getPermissions(user.id);
+      // For demo, we assume HOSPITAL_ADMIN has everything
+      if (user.role === 'HOSPITAL_ADMIN') return true;
+      
+      // Additional permission logic can be added here
+    }
+
+    throw new ForbiddenException('You do not have the required role or permission');
   }
 }

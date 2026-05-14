@@ -19,11 +19,20 @@ import { ClinicalModule } from './modules/clinical/clinical.module';
 import { IpdModule } from './modules/ipd/ipd.module';
 import { LabModule } from './modules/lab/lab.module';
 import { PharmacyModule } from './modules/pharmacy/pharmacy.module';
+import { BullModule } from '@nestjs/bullmq';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { ReportsModule } from './modules/reports/reports.module';
 import { AuditModule } from './modules/audit/audit.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    BullModule.forRoot({
+      connection: {
+        host: process.env.REDIS_HOST || 'localhost',
+        port: parseInt(process.env.REDIS_PORT || '6379'),
+      },
+    }),
     PrismaModule,
     AuthModule,
     PatientsModule,
@@ -36,6 +45,8 @@ import { AuditModule } from './modules/audit/audit.module';
     IpdModule,
     LabModule,
     PharmacyModule,
+    NotificationsModule,
+    ReportsModule,
     AuditModule,
   ],
   controllers: [AppController],
