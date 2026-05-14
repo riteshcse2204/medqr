@@ -46,7 +46,10 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
           <NavItem href="/" icon={<LayoutDashboard size={22}/>} label="Dashboard" active={pathname === '/'} />
           <NavItem href="/patients" icon={<Users size={22}/>} label="Patients" active={pathname.startsWith('/patients')} />
           <NavItem href="/doctor/opd" icon={<Stethoscope size={22}/>} label="OPD Consultation" active={pathname.startsWith('/doctor')} />
-          <NavItem href="/billing" icon={<FileText size={22}/>} label="Billing & Pharmacy" active={pathname.startsWith('/billing')} />
+          <NavItem href="/ipd" icon={<Home size={22}/>} label="Wards & IPD" active={pathname.startsWith('/ipd')} />
+          <NavItem href="/lab" icon={<FlaskConical size={22}/>} label="Laboratory" active={pathname.startsWith('/lab')} />
+          <NavItem href="/pharmacy" icon={<Pill size={22}/>} label="Pharmacy Stock" active={pathname.startsWith('/pharmacy')} />
+          <NavItem href="/billing" icon={<FileText size={22}/>} label="Billing & Invoices" active={pathname.startsWith('/billing')} />
           
           <div className="pt-8 pb-4">
             <p className="px-4 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Administration</p>
