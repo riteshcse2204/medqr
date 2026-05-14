@@ -12,6 +12,13 @@ import { BillingModule } from './modules/billing/billing.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { ResponseTransformInterceptor } from './common/interceptors/response-transform.interceptor';
+import { TenantsModule } from './modules/tenants/tenants.module';
+import { UsersModule } from './modules/users/users.module';
+import { ClinicalModule } from './modules/clinical/clinical.module';
+import { IpdModule } from './modules/ipd/ipd.module';
+import { LabModule } from './modules/lab/lab.module';
+import { PharmacyModule } from './modules/pharmacy/pharmacy.module';
+import { AuditModule } from './modules/audit/audit.module';
 
 @Module({
   imports: [
@@ -22,6 +29,13 @@ import { ResponseTransformInterceptor } from './common/interceptors/response-tra
     DoctorsModule,
     AppointmentsModule,
     BillingModule,
+    TenantsModule,
+    UsersModule,
+    ClinicalModule,
+    IpdModule,
+    LabModule,
+    PharmacyModule,
+    AuditModule,
   ],
   controllers: [AppController],
   providers: [

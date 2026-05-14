@@ -3,7 +3,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -19,6 +18,8 @@ model Tenant {
   domain      String?  @unique
   plan        String   @default("BASIC")
   isActive    Boolean  @default(true)
+  createdBy   String?
+  updatedBy   String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   deletedAt   DateTime?
@@ -29,6 +30,12 @@ model Tenant {
   appointments Appointment[]
   bills        Bill[]
   medicines    Medicine[]
+  encounters   Encounter[]
+  prescriptions Prescription[]
+  wards        Ward[]
+  beds         Bed[]
+  admissions   IpdAdmission[]
+  labOrders    LabOrder[]
 
   @@map("tenants")
 }
@@ -45,6 +52,8 @@ model User {
   phone      String?
   role       Role     @default(RECEPTIONIST)
   isActive   Boolean  @default(true)
+  createdBy  String?
+  updatedBy  String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   deletedAt  DateTime?
@@ -72,6 +81,10 @@ model Patient {
 
   appointments Appointment[]
   bills        Bill[]
+  encounters   Encounter[]
+  prescriptions Prescription[]
+  admissions   IpdAdmission[]
+  labOrders    LabOrder[]
 
   createdBy  String?
   updatedBy  String?
@@ -99,7 +112,13 @@ model Doctor {
   isActive        Boolean  @default(true)
 
   appointments    Appointment[]
+  encounters      Encounter[]
+  prescriptions   Prescription[]
+  admissions      IpdAdmission[]
+  labOrders       LabOrder[]
 
+  createdBy  String?
+  updatedBy  String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   deletedAt  DateTime?
@@ -133,9 +152,80 @@ model Appointment {
   updatedAt  DateTime @updatedAt
   deletedAt  DateTime?
 
+  encounter  Encounter?
+
   @@index([tenantId, doctorId, date, status])
   @@index([tenantId, patientId, createdAt(sort: Desc)])
   @@map("appointments")
+}
+
+// ─── CLINICAL ───────────────────────────────────────────────────────────────
+
+model Encounter {
+  id         String   @id @default(cuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id])
+  patientId  String
+  patient    Patient  @relation(fields: [patientId], references: [id])
+  doctorId   String
+  doctor     Doctor   @relation(fields: [doctorId], references: [id])
+  appointmentId String? @unique
+  appointment   Appointment? @relation(fields: [appointmentId], references: [id])
+
+  type        EncounterType @default(OPD)
+  vitals      Json?         // {bp, temp, pulse, weight, height, spo2}
+  diagnosis   String?
+  notes       String?
+
+  prescriptions Prescription[]
+  labOrders     LabOrder[]
+
+  createdBy  String?
+  updatedBy  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deletedAt  DateTime?
+
+  @@index([tenantId, patientId, createdAt(sort: Desc)])
+  @@map("encounters")
+}
+
+model Prescription {
+  id           String   @id @default(cuid())
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id])
+  patientId    String
+  patient      Patient  @relation(fields: [patientId], references: [id])
+  doctorId     String
+  doctor       Doctor   @relation(fields: [doctorId], references: [id])
+  encounterId  String?
+  encounter    Encounter? @relation(fields: [encounterId], references: [id])
+
+  notes        String?
+  items        PrescriptionItem[]
+
+  createdBy  String?
+  updatedBy  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deletedAt  DateTime?
+
+  @@index([tenantId, patientId, createdAt(sort: Desc)])
+  @@map("prescriptions")
+}
+
+model PrescriptionItem {
+  id             String  @id @default(cuid())
+  prescriptionId String
+  prescription   Prescription @relation(fields: [prescriptionId], references: [id])
+  medicineId     String?
+  medicineName   String
+  dosage         String
+  frequency      String
+  duration       String
+  instructions   String?
+
+  @@map("prescription_items")
 }
 
 // ─── BILLING ────────────────────────────────────────────────────────────────
@@ -165,6 +255,113 @@ model Bill {
   @@map("bills")
 }
 
+// ─── IPD ────────────────────────────────────────────────────────────────────
+
+model Ward {
+  id          String   @id @default(cuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  name        String
+  type        WardType @default(GENERAL)
+  floor       String?
+
+  beds        Bed[]
+
+  createdBy  String?
+  updatedBy  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deletedAt  DateTime?
+
+  @@map("wards")
+}
+
+model Bed {
+  id          String   @id @default(cuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  wardId      String
+  ward        Ward     @relation(fields: [wardId], references: [id])
+  bedNumber   String
+  status      BedStatus @default(AVAILABLE)
+
+  admissions  IpdAdmission[]
+
+  @@map("beds")
+}
+
+model IpdAdmission {
+  id          String   @id @default(cuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  patientId   String
+  patient     Patient  @relation(fields: [patientId], references: [id])
+  doctorId    String
+  doctor      Doctor   @relation(fields: [doctorId], references: [id])
+  bedId       String
+  bed         Bed      @relation(fields: [bedId], references: [id])
+
+  admissionDate DateTime @default(now())
+  dischargeDate DateTime?
+  status        AdmissionStatus @default(ADMITTED)
+  reason        String?
+  notes         String?
+
+  createdBy  String?
+  updatedBy  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deletedAt  DateTime?
+
+  @@map("ipd_admissions")
+}
+
+// ─── LAB ────────────────────────────────────────────────────────────────────
+
+model LabOrder {
+  id          String   @id @default(cuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  patientId   String
+  patient     Patient  @relation(fields: [patientId], references: [id])
+  doctorId    String
+  doctor      Doctor   @relation(fields: [doctorId], references: [id])
+  encounterId String?
+  encounter   Encounter? @relation(fields: [encounterId], references: [id])
+
+  testName    String
+  status      LabStatus @default(PENDING)
+  priority    String    @default("NORMAL")
+  notes       String?
+
+  results     LabResult[]
+
+  createdBy  String?
+  updatedBy  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deletedAt  DateTime?
+
+  @@map("lab_orders")
+}
+
+model LabResult {
+  id          String   @id @default(cuid())
+  orderId     String
+  order       LabOrder @relation(fields: [orderId], references: [id])
+  parameter   String
+  value       String
+  unit        String?
+  referenceRange String?
+  isAbnormal  Boolean  @default(false)
+  notes       String?
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("lab_results")
+}
+
 model BillItem {
   id          String  @id @default(cuid())
   billId      String
@@ -192,6 +389,8 @@ model Medicine {
   minStock     Int      @default(10)
   isActive     Boolean  @default(true)
 
+  createdBy  String?
+  updatedBy  String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   deletedAt  DateTime?
@@ -257,5 +456,43 @@ enum BillStatus {
   PARTIAL
   PAID
   REFUNDED
+  CANCELLED
+}
+
+enum EncounterType {
+  OPD
+  IPD
+  EMERGENCY
+  TELECONSULT
+}
+
+enum WardType {
+  GENERAL
+  SEMI_PRIVATE
+  PRIVATE
+  ICU
+  NICU
+  OT
+}
+
+enum BedStatus {
+  AVAILABLE
+  OCCUPIED
+  MAINTENANCE
+  CLEANING
+}
+
+enum AdmissionStatus {
+  ADMITTED
+  DISCHARGED
+  TRANSFERRED
+  CANCELLED
+}
+
+enum LabStatus {
+  PENDING
+  COLLECTED
+  PROCESSING
+  COMPLETED
   CANCELLED
 }
