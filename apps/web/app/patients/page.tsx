@@ -1,25 +1,43 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { 
   Users, Search, Plus, Filter, 
-  MoreVertical, UserPlus, ArrowRight
+  MoreVertical, UserPlus, ArrowRight,
+  Loader2, AlertCircle
 } from 'lucide-react';
-
-const MOCK_PATIENTS = [
-  { id: 'PT-9284', name: 'Rahul Sharma', phone: '9876543210', gender: 'MALE', age: 28, lastVisit: '12 May 2026' },
-  { id: 'PT-9285', name: 'Anita Desai', phone: '9876543211', gender: 'FEMALE', age: 45, lastVisit: '10 May 2026' },
-  { id: 'PT-9286', name: 'Vikram Singh', phone: '9876543212', gender: 'MALE', age: 34, lastVisit: '08 May 2026' },
-];
+import { api } from '@/lib/api';
 
 export default function PatientsPage() {
+  const [patients, setPatients] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [search, setSearch] = useState('');
+
+  const fetchPatients = async () => {
+    try {
+      setLoading(true);
+      const data: any = await api.get(`/patients?search=${search}`);
+      setPatients(data);
+      setError('');
+    } catch (err: any) {
+      setError('Failed to load patients. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPatients();
+  }, [search]);
+
   return (
     <div className="p-8 max-w-7xl mx-auto">
       <div className="flex flex-wrap justify-between items-end gap-6 mb-10">
         <div>
           <h1 className="text-4xl font-extrabold text-slate-800 tracking-tight flex items-center gap-4">
-            Patients <span className="bg-blue-100 text-blue-600 text-sm px-4 py-1 rounded-full">{MOCK_PATIENTS.length} Total</span>
+            Patients {!loading && <span className="bg-blue-100 text-blue-600 text-sm px-4 py-1 rounded-full">{patients.length} Total</span>}
           </h1>
           <p className="text-slate-500 mt-2 text-lg">Search, register and manage patient medical records.</p>
         </div>
@@ -37,6 +55,8 @@ export default function PatientsPage() {
             <input 
               type="text" 
               placeholder="Search by name, ID or phone..." 
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               className="pl-12 pr-6 py-4 bg-slate-50 border-transparent rounded-2xl w-96 outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 transition-all text-sm font-medium"
             />
           </div>
@@ -45,47 +65,66 @@ export default function PatientsPage() {
           </button>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="bg-slate-50/50">
-                <th className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Patient Details</th>
-                <th className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Contact</th>
-                <th className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Gender/Age</th>
-                <th className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Last Visit</th>
-                <th className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-50">
-              {MOCK_PATIENTS.map((pt) => (
-                <tr key={pt.id} className="hover:bg-slate-50/80 transition-colors group">
-                  <td className="px-8 py-6">
-                    <div className="flex items-center gap-4">
-                      <div className="h-12 w-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-lg">
-                        {pt.name.charAt(0)}
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-slate-800">{pt.name}</h4>
-                        <p className="text-xs text-slate-400 font-medium">{pt.id}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-8 py-6 text-slate-600 font-medium">{pt.phone}</td>
-                  <td className="px-8 py-6">
-                    <span className="text-slate-700 font-semibold">{pt.gender}</span>
-                    <span className="text-slate-400 ml-2">({pt.age}Y)</span>
-                  </td>
-                  <td className="px-8 py-6 text-slate-500 font-medium">{pt.lastVisit}</td>
-                  <td className="px-8 py-6 text-right">
-                    <button className="p-3 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">
-                      <ArrowRight size={20} />
-                    </button>
-                  </td>
+        {loading ? (
+          <div className="p-20 flex flex-col items-center justify-center text-slate-400">
+            <Loader2 className="animate-spin mb-4" size={40} />
+            <p className="font-medium">Fetching patient records...</p>
+          </div>
+        ) : error ? (
+          <div className="p-20 flex flex-col items-center justify-center text-red-500">
+            <AlertCircle className="mb-4" size={40} />
+            <p className="font-medium">{error}</p>
+            <button onClick={fetchPatients} className="mt-4 text-blue-600 font-bold hover:underline">Try Again</button>
+          </div>
+        ) : patients.length === 0 ? (
+          <div className="p-20 flex flex-col items-center justify-center text-slate-400">
+            <Users className="mb-4 opacity-20" size={60} />
+            <p className="font-medium text-lg">No patients found</p>
+            <p className="text-sm">Try a different search or register a new patient.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="bg-slate-50/50">
+                  <th className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Patient Details</th>
+                  <th className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Contact</th>
+                  <th className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Gender/Age</th>
+                  <th className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Joined Date</th>
+                  <th className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {patients.map((pt) => (
+                  <tr key={pt.id} className="hover:bg-slate-50/80 transition-colors group">
+                    <td className="px-8 py-6">
+                      <div className="flex items-center gap-4">
+                        <div className="h-12 w-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-lg">
+                          {pt.name.charAt(0)}
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-slate-800">{pt.name}</h4>
+                          <p className="text-[10px] font-black text-slate-300 uppercase tracking-tighter">ID: {pt.id.slice(-6)}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-8 py-6 text-slate-600 font-medium">{pt.phone}</td>
+                    <td className="px-8 py-6">
+                      <span className="text-slate-700 font-semibold">{pt.gender}</span>
+                      <span className="text-slate-400 ml-2">({new Date().getFullYear() - new Date(pt.dob).getFullYear()}Y)</span>
+                    </td>
+                    <td className="px-8 py-6 text-slate-500 font-medium">{new Date(pt.createdAt).toLocaleDateString()}</td>
+                    <td className="px-8 py-6 text-right">
+                      <button className="p-3 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">
+                        <ArrowRight size={20} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

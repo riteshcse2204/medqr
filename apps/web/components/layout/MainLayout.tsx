@@ -13,8 +13,15 @@ import { useAuthStore } from '@/store/useAuthStore';
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, logout } = useAuthStore();
+  const { user, token, logout } = useAuthStore();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Redirect to login if no token is found
+  React.useEffect(() => {
+    if (!token && pathname !== '/login') {
+      router.push('/login');
+    }
+  }, [token, pathname, router]);
 
   // Hide sidebar on login page
   if (pathname === '/login') return <>{children}</>;
