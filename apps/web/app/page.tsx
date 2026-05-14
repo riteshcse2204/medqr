@@ -1,70 +1,12 @@
-import React from 'react';
 import { 
   Users, Activity, Calendar, FileText, 
   Settings, Bell, Search, Menu, 
   TrendingUp, Plus
 } from 'lucide-react';
-import './globals.css';
 
 export default function Dashboard() {
   return (
-    <div className="min-h-screen flex bg-slate-50 text-slate-900 font-sans">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-200 hidden md:flex flex-col">
-        <div className="p-6 border-b border-slate-100 flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-200">
-            M
-          </div>
-          <h1 className="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-sky-500">MedQR</h1>
-        </div>
-        
-        <nav className="flex-1 p-4 space-y-2">
-          <NavItem icon={<Activity size={20}/>} label="Dashboard" active />
-          <NavItem icon={<Users size={20}/>} label="Patients" />
-          <NavItem icon={<Calendar size={20}/>} label="Appointments" />
-          <NavItem icon={<FileText size={20}/>} label="Billing" />
-        </nav>
-        
-        <div className="p-4 border-t border-slate-100">
-          <NavItem icon={<Settings size={20}/>} label="Settings" />
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden">
-        {/* Topbar */}
-        <header className="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0 z-10">
-          <div className="flex items-center gap-4">
-            <button className="md:hidden p-2 text-slate-500 hover:bg-slate-100 rounded-lg">
-              <Menu size={24} />
-            </button>
-            <div className="relative group hidden sm:block">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={20} />
-              <input 
-                type="text" 
-                placeholder="Search patients, ID, or phone..." 
-                className="pl-10 pr-4 py-2.5 bg-slate-100 border-transparent focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-xl w-80 outline-none transition-all duration-300"
-              />
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-5">
-            <button className="relative p-2 text-slate-500 hover:bg-blue-50 hover:text-blue-600 rounded-full transition-colors">
-              <Bell size={22} />
-              <span className="absolute top-1.5 right-2 h-2.5 w-2.5 bg-red-500 rounded-full border-2 border-white"></span>
-            </button>
-            <div className="flex items-center gap-3 pl-5 border-l border-slate-200 cursor-pointer group">
-              <div className="text-right hidden sm:block">
-                <p className="text-sm font-semibold text-slate-700 group-hover:text-blue-600 transition-colors">Dr. Ritesh</p>
-                <p className="text-xs text-slate-500">Cardiologist</p>
-              </div>
-              <img src="https://i.pravatar.cc/150?img=11" alt="Profile" className="h-10 w-10 rounded-full ring-2 ring-slate-100 group-hover:ring-blue-200 transition-all shadow-sm" />
-            </div>
-          </div>
-        </header>
-
-        {/* Dashboard Content */}
-        <div className="flex-1 overflow-auto p-8">
+    <div className="flex-1 overflow-auto p-8">
           <div className="flex justify-between items-end mb-8">
             <div>
               <h2 className="text-3xl font-bold text-slate-800 tracking-tight">Overview</h2>
@@ -112,8 +54,7 @@ export default function Dashboard() {
               </button>
             </div>
           </div>
-        </div>
-      </main>
+      </div>
     </div>
   );
 }

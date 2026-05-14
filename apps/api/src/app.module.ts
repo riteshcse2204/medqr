@@ -12,6 +12,7 @@ import { BillingModule } from './modules/billing/billing.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { ResponseTransformInterceptor } from './common/interceptors/response-transform.interceptor';
+import { AuditLogInterceptor } from './common/interceptors/audit-log.interceptor';
 import { TenantsModule } from './modules/tenants/tenants.module';
 import { UsersModule } from './modules/users/users.module';
 import { ClinicalModule } from './modules/clinical/clinical.module';
@@ -43,6 +44,7 @@ import { AuditModule } from './modules/audit/audit.module';
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
     { provide: APP_INTERCEPTOR, useClass: ResponseTransformInterceptor },
+    { provide: APP_INTERCEPTOR, useClass: AuditLogInterceptor },
   ],
 })
 export class AppModule {}
