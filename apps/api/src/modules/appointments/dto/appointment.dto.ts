@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { AppointmentStatus, AppointmentType } from '@prisma/client';
+import { AppointmentStatus, AppointmentType } from '../../../prisma/client';
 import {
   IsString, IsNotEmpty, IsOptional, IsEnum, IsDateString, IsNumber,
 } from 'class-validator';

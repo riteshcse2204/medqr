@@ -1,18 +1,22 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { BillStatus } from '@prisma/client';
+import { BillStatus } from '../../prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateBillDto, UpdateBillDto } from './dto/bill.dto';
+import { GstService } from './gst.service';
+import { RazorpayService } from './razorpay.service';
 
 @Injectable()
 export class BillingService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private gstService: GstService,
+    private razorpayService: RazorpayService
+  ) {}
 
   async create(tenantId: string, userId: string, dto: CreateBillDto) {
-    const totalAmount = dto.items.reduce(
-      (sum, item) => sum + item.quantity * item.unitPrice, 0,
-    );
+    const gstData = this.gstService.calculateGst(dto.items);
     const discount = dto.discount ?? 0;
-    const netAmount = totalAmount - discount;
+    const finalAmount = gstData.totalAmount - discount;
 
     // Generate bill number
     const count = await this.prisma.bill.count({ where: { tenantId } });
@@ -21,25 +25,43 @@ export class BillingService {
     const bill = await this.prisma.bill.create({
       data: {
         tenantId,
+        branchId: dto.branchId,
         patientId: dto.patientId,
         billNo,
-        totalAmount: netAmount,
+        taxableAmount: gstData.taxableAmount,
+        cgst: gstData.cgst,
+        sgst: gstData.sgst,
+        igst: gstData.igst,
+        totalAmount: finalAmount,
         discount,
         paymentMode: dto.paymentMode,
         notes: dto.notes,
         status: BillStatus.PENDING,
         createdBy: userId,
         items: {
-          create: dto.items.map((item) => ({
-            description: item.description,
-            quantity: item.quantity,
-            unitPrice: item.unitPrice,
-            total: item.quantity * item.unitPrice,
-          })),
+          create: dto.items.map((item) => {
+            const itemTaxable = item.quantity * item.unitPrice;
+            const itemGst = (itemTaxable * (item.gstRate || 0)) / 100;
+            return {
+              description: item.description,
+              hsnCode: item.hsnCode,
+              quantity: item.quantity,
+              unitPrice: item.unitPrice,
+              gstRate: item.gstRate || 0,
+              gstAmount: itemGst,
+              total: itemTaxable + itemGst,
+            };
+          }),
         },
       },
       include: { patient: true, items: true },
     });
+
+    // If online payment, create Razorpay order
+    if (dto.paymentMode === 'ONLINE') {
+      const order = await this.razorpayService.createOrder(finalAmount, bill.id);
+      return { ...bill, razorpayOrder: order };
+    }
 
     return bill;
   }

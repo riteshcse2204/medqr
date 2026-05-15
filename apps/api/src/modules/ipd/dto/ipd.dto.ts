@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { WardType, BedStatus, AdmissionStatus } from '@prisma/client';
+import { WardType, BedStatus, AdmissionStatus } from '../../../prisma/client';
 import {
   IsString,
   IsNotEmpty,

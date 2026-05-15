@@ -6,14 +6,17 @@ import { usePathname, useRouter } from 'next/navigation';
 import { 
   Users, Activity, Calendar, FileText, 
   Settings, Bell, Search, Menu, 
-  LogOut, LayoutDashboard, Stethoscope, Pill
+  LogOut, LayoutDashboard, Stethoscope, Pill,
+  Home, FlaskConical
 } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useLanguage } from '@/lib/LanguageContext';
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, token, logout } = useAuthStore();
+  const { language, setLanguage, t } = useLanguage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Redirect to login if no token is found
@@ -31,6 +34,10 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
     router.push('/login');
   };
 
+  const toggleLanguage = () => {
+    setLanguage(language === 'en' ? 'hi' : 'en');
+  };
+
   return (
     <div className="min-h-screen flex bg-slate-50 text-slate-900 font-sans">
       {/* Sidebar */}
@@ -43,17 +50,20 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         </div>
         
         <nav className="flex-1 p-6 space-y-3 overflow-y-auto">
-          <NavItem href="/" icon={<LayoutDashboard size={22}/>} label="Dashboard" active={pathname === '/'} />
-          <NavItem href="/patients" icon={<Users size={22}/>} label="Patients" active={pathname.startsWith('/patients')} />
+          <NavItem href="/" icon={<LayoutDashboard size={22}/>} label={t('dashboard')} active={pathname === '/'} />
+          <NavItem href="/patients" icon={<Users size={22}/>} label={t('patients')} active={pathname.startsWith('/patients')} />
           <NavItem href="/doctor/opd" icon={<Stethoscope size={22}/>} label="OPD Consultation" active={pathname.startsWith('/doctor')} />
-          <NavItem href="/ipd" icon={<Home size={22}/>} label="Wards & IPD" active={pathname.startsWith('/ipd')} />
-          <NavItem href="/lab" icon={<FlaskConical size={22}/>} label="Laboratory" active={pathname.startsWith('/lab')} />
-          <NavItem href="/pharmacy" icon={<Pill size={22}/>} label="Pharmacy Stock" active={pathname.startsWith('/pharmacy')} />
-          <NavItem href="/billing" icon={<FileText size={22}/>} label="Billing & Invoices" active={pathname.startsWith('/billing')} />
+          <NavItem href="/ipd" icon={<Home size={22}/>} label={t('ipd')} active={pathname.startsWith('/ipd')} />
+          <NavItem href="/lab" icon={<FlaskConical size={22}/>} label={t('lab')} active={pathname.startsWith('/lab')} />
+          <NavItem href="/pharmacy" icon={<Pill size={22}/>} label={t('pharmacy')} active={pathname.startsWith('/pharmacy')} />
+          <NavItem href="/billing" icon={<FileText size={22}/>} label={t('billing')} active={pathname.startsWith('/billing')} />
+          <NavItem href="/iot" icon={<Activity size={22}/>} label="IoT Portal" active={pathname.startsWith('/iot')} />
+          <NavItem href="/analytics/nabh" icon={<ShieldCheck size={22}/>} label="NABH Compliance" active={pathname.startsWith('/analytics/nabh')} />
           
           <div className="pt-8 pb-4">
             <p className="px-4 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Administration</p>
-            <NavItem href="/settings" icon={<Settings size={22}/>} label="Hospital Settings" active={pathname === '/settings'} />
+            <NavItem href="/settings" icon={<Settings size={22}/>} label={t('settings')} active={pathname === '/settings'} />
+            <NavItem href="/settings/branches" icon={<MapPin size={22}/>} label="Branches" active={pathname.startsWith('/settings/branches')} />
           </div>
         </nav>
         
@@ -90,6 +100,21 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
           </div>
           
           <div className="flex items-center gap-6">
+            <div className="flex flex-col items-end mr-4 hidden md:flex">
+              <span className="text-[10px] font-black text-blue-500 uppercase tracking-[0.2em]">Current Branch</span>
+              <div className="flex items-center gap-2 text-slate-800 font-bold">
+                <Home size={14} className="text-blue-600" />
+                <span>Patna Main Hospital</span>
+              </div>
+            </div>
+
+            <button 
+              onClick={toggleLanguage}
+              className="px-4 py-2 bg-slate-100 hover:bg-blue-600 hover:text-white rounded-xl transition-all font-bold text-xs"
+            >
+              {language === 'en' ? 'हिन्दी (HI)' : 'English (EN)'}
+            </button>
+
             <button className="relative p-3 text-slate-500 hover:bg-blue-50 hover:text-blue-600 rounded-2xl transition-all">
               <Bell size={24} />
               <span className="absolute top-3.5 right-3.5 h-3 w-3 bg-red-500 rounded-full border-2 border-white animate-pulse"></span>

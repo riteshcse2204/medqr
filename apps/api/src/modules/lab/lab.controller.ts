@@ -14,7 +14,7 @@ import { CreateLabOrderDto, UpdateLabResultsDto } from './dto/lab.dto';
 import { Tenant } from '../../common/decorators/tenant.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
-import { Role } from '@prisma/client';
+import { Role } from '../../prisma/client';
 
 @ApiTags('lab')
 @ApiBearerAuth()

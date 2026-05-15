@@ -2,6 +2,7 @@ import { Module, Global } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
 import { NotificationsService } from './notifications.service';
 import { NotificationsProcessor } from './notifications.processor';
+import { WhatsAppService } from './whatsapp.service';
 
 @Global()
 @Module({
@@ -10,7 +11,7 @@ import { NotificationsProcessor } from './notifications.processor';
       name: 'notifications',
     }),
   ],
-  providers: [NotificationsService, NotificationsProcessor],
+  providers: [NotificationsService, NotificationsProcessor, WhatsAppService],
   exports: [NotificationsService],
 })
 export class NotificationsModule {}

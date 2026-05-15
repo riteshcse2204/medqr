@@ -5,7 +5,7 @@ import {
   Settings, User, Shield, Building, 
   Bell, Smartphone, Database, Globe,
   ChevronRight, Save, Plus, Loader2,
-  Trash2, Mail, Lock
+  Trash2, Mail, Lock, Edit
 } from 'lucide-react';
 
 export default function SettingsPage() {

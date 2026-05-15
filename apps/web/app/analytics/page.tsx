@@ -4,7 +4,7 @@ import React from 'react';
 import { 
   TrendingUp, TrendingDown, Users, 
   Calendar, Banknote, Clock, ArrowRight,
-  Filter, Download
+  Filter, Download, Activity
 } from 'lucide-react';
 
 export default function AnalyticsPage() {
@@ -46,6 +46,42 @@ export default function AnalyticsPage() {
           <h3 className="text-2xl font-black text-slate-800 tracking-tight mb-8">Patient Demographics</h3>
           <div className="flex-1 bg-slate-50 rounded-[32px] border-2 border-dashed border-slate-100 flex items-center justify-center text-slate-300 font-bold">
             Age & Gender Distribution
+          </div>
+        </div>
+      </div>
+
+      {/* AI Predictive Insights */}
+      <div className="bg-gradient-to-br from-indigo-900 to-blue-900 rounded-[40px] p-12 text-white shadow-2xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-12 opacity-10">
+          <Activity size={200} />
+        </div>
+        <div className="relative z-10">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="h-10 w-10 bg-blue-500 rounded-xl flex items-center justify-center animate-pulse">
+              <Activity size={20} />
+            </div>
+            <h3 className="text-2xl font-black tracking-tight">AI Predictive Insights</h3>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <AiInsight 
+              label="No-Show Risk" 
+              value="12% High Risk" 
+              desc="Next 24h appointments with high cancellation probability."
+              action="Send extra WhatsApp reminders"
+            />
+            <AiInsight 
+              label="Stock Forecast" 
+              value="Paracetamol Low" 
+              desc="Estimated stock out in 4 days based on current consumption."
+              action="Auto-generate PO to Supplier"
+            />
+            <AiInsight 
+              label="Revenue Forecast" 
+              value="₹8.5L Next Week" 
+              desc="Projected revenue based on current booking trends."
+              action="View growth strategy"
+            />
           </div>
         </div>
       </div>
@@ -104,6 +140,19 @@ function PerformanceRow({ name, dept, patients, revenue }: any) {
           <p className="text-lg font-black text-emerald-600">{revenue}</p>
         </div>
       </div>
+    </div>
+  );
+}
+
+function AiInsight({ label, value, desc, action }: any) {
+  return (
+    <div className="bg-white/10 backdrop-blur-md p-8 rounded-[32px] border border-white/10 hover:bg-white/20 transition-all group">
+      <h4 className="text-blue-300 font-bold text-xs uppercase tracking-widest mb-2">{label}</h4>
+      <div className="text-2xl font-black mb-4 group-hover:scale-105 transition-transform origin-left">{value}</div>
+      <p className="text-sm text-blue-100/60 leading-relaxed mb-6 font-medium">{desc}</p>
+      <button className="flex items-center gap-2 text-xs font-black text-blue-300 hover:text-white transition-colors group/btn">
+        {action} <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
+      </button>
     </div>
   );
 }

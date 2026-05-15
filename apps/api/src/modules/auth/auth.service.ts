@@ -108,7 +108,6 @@ export class AuthService {
     const user = await this.prisma.user.findFirst({
       where: { id: userId, deletedAt: null },
       include: { tenant: true },
-      omit: { password: true },
     });
 
     if (!user) throw new NotFoundException('User not found');

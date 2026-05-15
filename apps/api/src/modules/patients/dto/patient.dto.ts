@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Gender } from '@prisma/client';
+import { Gender } from '../../../prisma/client';
 import {
   IsString,
   IsNotEmpty,

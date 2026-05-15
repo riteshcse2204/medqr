@@ -52,8 +52,9 @@ export default function BillingPage() {
         </div>
 
         {/* Stats Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
           <StatBox label="Total Revenue" value={`₹${stats?.totalRevenue || 0}`} trend="+12%" icon={<Banknote className="text-emerald-500" />} color="bg-emerald-50" />
+          <StatBox label="Tax Collected" value={`₹${stats?.taxCollected || 0}`} trend="+15%" icon={<Activity className="text-blue-500" />} color="bg-blue-50" />
           <StatBox label="Pending Amount" value={`₹${stats?.pendingAmount || 0}`} trend="+2%" icon={<CreditCard className="text-amber-500" />} color="bg-amber-50" />
           <StatBox label="Bills (MTD)" value={stats?.totalBills || 0} trend="+8%" icon={<FileText className="text-blue-500" />} color="bg-blue-50" />
         </div>
@@ -66,6 +67,9 @@ export default function BillingPage() {
               <TabButton label="Pending" active={activeTab === 'pending'} onClick={() => setActiveTab('pending')} />
               <TabButton label="Paid" active={activeTab === 'paid'} onClick={() => setActiveTab('paid')} />
             </div>
+            <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
+              <span className="h-2 w-2 rounded-full bg-blue-500"></span> e-Invoice Enabled
+            </div>
           </div>
 
           {loading ? (
@@ -75,36 +79,39 @@ export default function BillingPage() {
               <table className="w-full text-left">
                 <thead>
                   <tr className="bg-slate-50/50">
-                    <th className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Invoice ID</th>
-                    <th className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Patient Name</th>
+                    <th className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Invoice / IRN</th>
+                    <th className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Patient & Branch</th>
                     <th className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Date</th>
-                    <th className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Amount</th>
-                    <th className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Status</th>
+                    <th className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Taxes (GST)</th>
+                    <th className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Total</th>
                     <th className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
                   {bills.map((inv) => (
                     <tr key={inv.id} className="hover:bg-slate-50/80 transition-colors group">
-                      <td className="px-8 py-6 font-bold text-slate-800">#{inv.invoiceNumber}</td>
                       <td className="px-8 py-6">
-                        <div className="flex items-center gap-3">
-                          <div className="h-9 w-9 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm">
-                            {inv.patient?.name.charAt(0)}
-                          </div>
+                        <div className="font-bold text-slate-800">#{inv.billNo}</div>
+                        <div className="text-[10px] text-emerald-600 font-bold tracking-tight uppercase">IRN: {inv.irn || 'GENERATING...'}</div>
+                      </td>
+                      <td className="px-8 py-6">
+                        <div className="flex items-center gap-3 mb-1">
                           <span className="font-semibold text-slate-700">{inv.patient?.name}</span>
                         </div>
+                        <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{inv.branch?.name || 'Main Branch'}</div>
                       </td>
                       <td className="px-8 py-6 text-slate-500 text-sm">{new Date(inv.createdAt).toLocaleDateString()}</td>
-                      <td className="px-8 py-6 font-extrabold text-slate-800">₹{inv.totalAmount}</td>
                       <td className="px-8 py-6">
-                        <span className={`px-4 py-1.5 rounded-full text-xs font-bold ${inv.status === 'PAID' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
-                          {inv.status}
-                        </span>
+                        <div className="text-xs font-bold text-slate-700">₹{(inv.cgst || 0) + (inv.sgst || 0)}</div>
+                        <div className="text-[10px] text-slate-400 font-medium">CGST + SGST</div>
+                      </td>
+                      <td className="px-8 py-6">
+                        <div className="font-extrabold text-slate-800">₹{inv.totalAmount}</div>
+                        <span className={`text-[10px] font-black ${inv.status === 'PAID' ? 'text-emerald-500' : 'text-amber-500'}`}>{inv.status}</span>
                       </td>
                       <td className="px-8 py-6 text-right">
                         <div className="flex justify-end gap-2">
-                          <button className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
+                          <button className="p-3 bg-slate-100 text-slate-500 hover:bg-blue-600 hover:text-white rounded-xl transition-all">
                             <Printer size={18} />
                           </button>
                         </div>

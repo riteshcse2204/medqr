@@ -1,10 +1,15 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 import { Logger } from '@nestjs/common';
+import { WhatsAppService } from './whatsapp.service';
 
 @Processor('notifications')
 export class NotificationsProcessor extends WorkerHost {
   private readonly logger = new Logger(NotificationsProcessor.name);
+
+  constructor(private readonly whatsappService: WhatsAppService) {
+    super();
+  }
 
   async process(job: Job<any, any, string>): Promise<any> {
     const { tenantId, phone, message, type, email, subject } = job.data;
@@ -13,8 +18,7 @@ export class NotificationsProcessor extends WorkerHost {
 
     switch (job.name) {
       case 'send-whatsapp':
-        // Here you would integrate with Meta WhatsApp API or Twilio
-        this.logger.log(`WHATSAPP SENT to ${phone}: ${message}`);
+        await this.whatsappService.sendMessage(phone, message);
         break;
 
       case 'send-sms':

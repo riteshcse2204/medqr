@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { EncounterType } from '@prisma/client';
+import { EncounterType } from '../../../prisma/client';
 import {
   IsString,
   IsNotEmpty,
@@ -79,7 +79,7 @@ export class CreateEncounterDto {
 
   @ApiPropertyOptional({ type: [PrescriptionItemDto] })
   @IsArray()
-  @ValidateNested({每一: true })
+  @ValidateNested({ each: true })
   @Type(() => PrescriptionItemDto)
   @IsOptional()
   prescriptions?: PrescriptionItemDto[];

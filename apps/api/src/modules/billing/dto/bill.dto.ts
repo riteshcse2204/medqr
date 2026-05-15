@@ -17,6 +17,16 @@ export class BillItemDto {
   @IsNumber()
   @Min(0)
   unitPrice: number;
+
+  @ApiPropertyOptional({ example: '9983' })
+  @IsString()
+  @IsOptional()
+  hsnCode?: string;
+
+  @ApiPropertyOptional({ example: 18 })
+  @IsNumber()
+  @IsOptional()
+  gstRate?: number;
 }
 
 export class CreateBillDto {
@@ -24,6 +34,11 @@ export class CreateBillDto {
   @IsString()
   @IsNotEmpty()
   patientId: string;
+
+  @ApiPropertyOptional({ example: 'clbranch123' })
+  @IsString()
+  @IsOptional()
+  branchId?: string;
 
   @ApiProperty({ type: [BillItemDto] })
   @IsArray()
