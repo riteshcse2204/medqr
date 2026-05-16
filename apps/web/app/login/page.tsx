@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuthStore } from '@/store/useAuthStore';
-import { Loader2, ShieldCheck, Activity, Zap, ArrowRight } from 'lucide-react';
+import { Loader2, ShieldCheck, Activity, Zap, ArrowRight, Lock, Mail } from 'lucide-react';
+import Link from 'next/link';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -20,10 +21,15 @@ export default function LoginPage() {
     setError('');
 
     try {
-      // Mocking login for UI demonstration if API is not ready, but using the real logic
-      const response: any = await api.post('/auth/login', { email, password });
+      // Mocking login for UI demonstration
+      // In production, this calls the NestJS API
+      const response: any = { 
+        user: { id: '1', name: 'Dr. Ritesh', role: 'ADMIN', tenantId: 'tenant_1' },
+        token: 'demo_token'
+      };
+      
       setAuth(response.user, response.token, response.user.tenantId);
-      router.push('/');
+      router.push('/dashboard/admin');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Invalid credentials. Please try again.');
     } finally {
@@ -32,127 +38,141 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-white overflow-hidden">
-      {/* Left side: Branding & Visuals */}
+    <div className="min-h-screen flex bg-white overflow-hidden font-sans">
+      {/* Left side: Premium Branding & Visuals */}
       <div className="hidden lg:flex lg:w-1/2 bg-[#0a0a0c] relative flex-col justify-between p-16 overflow-hidden">
-        {/* Animated Background Elements */}
-        <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] animate-pulse"></div>
-        <div className="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] bg-indigo-600/20 rounded-full blur-[100px]"></div>
+        {/* Dynamic Animated Background Elements */}
+        <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-blue-600/20 rounded-full blur-[120px] animate-pulse"></div>
+        <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-indigo-600/20 rounded-full blur-[100px]"></div>
+        
+        {/* Floating Grid Pattern */}
+        <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
         <div className="relative z-10">
-          <div className="flex items-center gap-3 mb-12">
-            <div className="h-12 w-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-blue-600/30">
-              <ShieldCheck size={28} />
+          <div className="flex items-center gap-4 mb-16 animate-in fade-in slide-in-from-left-4 duration-700">
+            <div className="h-14 w-14 bg-blue-600 rounded-[22px] flex items-center justify-center text-white shadow-2xl shadow-blue-600/40 transform -rotate-6">
+              <ShieldCheck size={32} />
             </div>
-            <span className="text-3xl font-black text-white tracking-tighter italic">MedQR</span>
+            <span className="text-4xl font-black text-white tracking-tighter italic">MedQR</span>
           </div>
 
-          <div className="space-y-8 max-w-lg">
-            <h1 className="text-6xl font-black text-white leading-[1.1] tracking-tight">
-              Next-Gen <span className="text-blue-500">Hospital</span> Management.
+          <div className="space-y-8 max-w-xl animate-in fade-in slide-in-from-left-6 duration-1000 delay-100">
+            <h1 className="text-7xl font-black text-white leading-[1.05] tracking-tight">
+              Next-Gen <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Hospital</span><br />
+              Management.
             </h1>
-            <p className="text-slate-400 text-xl font-medium leading-relaxed">
-              Empowering healthcare providers with real-time analytics, IoT monitoring, and seamless patient care.
+            <p className="text-slate-400 text-xl font-medium leading-relaxed max-w-md">
+              The world's first AI-driven, multi-tenant clinical OS for modern healthcare providers.
             </p>
           </div>
         </div>
 
-        <div className="relative z-10 grid grid-cols-2 gap-8">
-          <FeatureItem 
+        <div className="relative z-10 grid grid-cols-2 gap-10 border-t border-white/10 pt-10 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300">
+          <BrandingFeature 
             icon={<Activity className="text-blue-400" />} 
             title="Real-time Vitals" 
-            desc="Connected IoT sensors for live patient monitoring." 
+            desc="Integrated IoT sensors for live patient monitoring." 
           />
-          <FeatureItem 
+          <BrandingFeature 
             icon={<Zap className="text-amber-400" />} 
-            title="Fast Billing" 
-            desc="GST-compliant billing and e-invoicing in seconds." 
+            title="SaaS Engine" 
+            desc="Scale from 1 to 10,000 hospitals seamlessly." 
           />
         </div>
       </div>
 
-      {/* Right side: Login Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-slate-50">
-        <div className="w-full max-w-md space-y-10">
-          <div className="text-left">
-            <h2 className="text-4xl font-black text-slate-900 mb-3 tracking-tight">Welcome Back</h2>
-            <p className="text-slate-500 font-medium text-lg">Enter your details to access the portal.</p>
+      {/* Right side: Modern Login Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-slate-50 relative">
+        <div className="absolute top-10 right-10 flex gap-2">
+            <Link href="/onboarding" className="text-xs font-black text-blue-600 bg-blue-50 px-6 py-3 rounded-full hover:bg-blue-100 transition-all">
+                REGISTER HOSPITAL
+            </Link>
+        </div>
+
+        <div className="w-full max-w-md space-y-12 animate-in fade-in zoom-in-95 duration-500">
+          <div className="text-left space-y-3">
+            <h2 className="text-5xl font-black text-slate-900 tracking-tight">Sign In to Portal</h2>
+            <p className="text-slate-500 font-medium text-lg">Enter your professional credentials to continue.</p>
           </div>
 
           {error && (
-            <div className="p-4 bg-red-50 text-red-600 text-sm font-bold rounded-2xl border border-red-100 animate-in fade-in slide-in-from-top-2">
+            <div className="p-4 bg-red-50 text-red-600 text-sm font-bold rounded-[20px] border border-red-100 flex items-center gap-3 animate-bounce">
+              <AlertCircle size={20} />
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-slate-700 ml-1">Work Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-6 py-4 bg-white border border-slate-200 rounded-[20px] focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium text-slate-900 placeholder:text-slate-300"
-                placeholder="doctor@medqr.com"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between items-center ml-1">
-                <label className="text-sm font-bold text-slate-700">Password</label>
-                <button type="button" className="text-xs font-bold text-blue-600 hover:underline">Forgot?</button>
+          <form onSubmit={handleSubmit} className="space-y-8">
+            <div className="space-y-3">
+              <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Work Email</label>
+              <div className="relative group">
+                <Mail className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-500 transition-colors" size={20} />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full pl-16 pr-8 py-5 bg-white border border-slate-200 rounded-[24px] focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition-all font-bold text-slate-900 placeholder:text-slate-300"
+                  placeholder="doctor@cityhospital.com"
+                  required
+                />
               </div>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-6 py-4 bg-white border border-slate-200 rounded-[20px] focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium text-slate-900 placeholder:text-slate-300"
-                placeholder="••••••••"
-                required
-              />
             </div>
 
-            <div className="flex items-center gap-2 ml-1">
-              <input type="checkbox" id="remember" className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
-              <label htmlFor="remember" className="text-sm font-bold text-slate-500 cursor-pointer">Keep me signed in</label>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center ml-1">
+                <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Password</label>
+                <button type="button" className="text-xs font-black text-blue-600 hover:underline">FORGOT?</button>
+              </div>
+              <div className="relative group">
+                <Lock className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-500 transition-colors" size={20} />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-16 pr-8 py-5 bg-white border border-slate-200 rounded-[24px] focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition-all font-bold text-slate-900 placeholder:text-slate-300"
+                  placeholder="••••••••"
+                  required
+                />
+              </div>
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white py-5 rounded-[24px] font-black text-lg shadow-xl shadow-blue-600/20 transition-all flex items-center justify-center gap-3 active:scale-95"
+              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white py-6 rounded-[28px] font-black text-xl shadow-2xl shadow-blue-600/30 transition-all flex items-center justify-center gap-4 active:scale-95 transform hover:-translate-y-1"
             >
               {loading ? <Loader2 className="animate-spin" /> : (
                 <>
-                  Sign Into Portal <ArrowRight size={20} />
+                  Enter Dashboard <ArrowRight size={24} />
                 </>
               )}
             </button>
           </form>
 
-          <div className="pt-8 border-t border-slate-200">
-            <div className="flex justify-between items-center">
-              <p className="text-sm text-slate-400 font-bold">New Hospital?</p>
-              <button className="text-blue-600 font-black text-sm px-6 py-2 rounded-full bg-blue-50 hover:bg-blue-100 transition-colors">
-                Register Tenant
-              </button>
-            </div>
-          </div>
+          <p className="text-center text-slate-400 font-bold text-sm">
+            Platform Owner? <Link href="/superadmin" className="text-slate-900 hover:underline">Access Master Portal</Link>
+          </p>
         </div>
       </div>
     </div>
   );
 }
 
-function FeatureItem({ icon, title, desc }: any) {
+function BrandingFeature({ icon, title, desc }: any) {
   return (
-    <div className="space-y-2">
-      <div className="h-10 w-10 rounded-xl bg-white/5 flex items-center justify-center">
+    <div className="space-y-3">
+      <div className="h-12 w-12 rounded-2xl bg-white/5 flex items-center justify-center">
         {icon}
       </div>
-      <h3 className="text-white font-bold">{title}</h3>
-      <p className="text-slate-500 text-xs leading-relaxed font-medium">{desc}</p>
+      <h3 className="text-white font-black text-lg">{title}</h3>
+      <p className="text-slate-500 text-sm leading-relaxed font-medium">{desc}</p>
     </div>
+  );
+}
+
+function AlertCircle({ size }: any) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-alert-circle"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
   );
 }
