@@ -7,7 +7,7 @@ import {
   Users, Activity, Calendar, FileText, 
   Settings, Bell, Search, Menu, 
   LogOut, LayoutDashboard, Stethoscope, Pill,
-  Home, FlaskConical
+  Home, FlaskConical, ShieldCheck, MapPin
 } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useLanguage } from '@/lib/LanguageContext';
