@@ -1,159 +1,220 @@
-# Turborepo starter
+# 🏥 MedQR — Hospital Management System
 
-This Turborepo starter is maintained by the Turborepo core team.
+> A production-ready, multi-tenant Hospital Management SaaS built for Tier 2/3 cities in India.  
+> Mobile-first. GST-compliant. NABH-ready. IoT-enabled.
 
-## Using this example
+---
 
-Run the following command:
+## 📖 Table of Contents
+- [What is MedQR?](#what-is-medqr)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Key Features](#key-features)
+- [Role-Based Access](#role-based-access)
+- [Getting Started](#getting-started)
+- [Environment Variables](#environment-variables)
+- [Full File Documentation](#full-file-documentation)
 
-```sh
-npx create-turbo@latest
+---
+
+## What is MedQR?
+
+MedQR is a complete Hospital Management System (HMS) that manages:
+- **OPD & IPD** workflows
+- **Multi-branch** hospital networks
+- **Pharmacy** dispensing with auto prescription sync
+- **Lab** test ordering and reporting
+- **GST Billing** + Razorpay payments
+- **IoT** real-time patient vitals monitoring
+- **NABH** compliance reporting
+- **AI-powered** analytics (no-show prediction, stock forecasting)
+- **WhatsApp** notifications via Twilio
+- **Multi-language** (English + Hindi)
+- **Offline PWA** support
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Frontend** | Next.js 14 (App Router), TypeScript, Tailwind CSS |
+| **Backend** | NestJS, TypeScript, Prisma ORM |
+| **Database** | PostgreSQL (multi-tenant with `tenantId`) |
+| **Cache/Queue** | Redis + BullMQ |
+| **Auth** | JWT + Passport.js + bcrypt |
+| **Payments** | Razorpay |
+| **Messaging** | Twilio WhatsApp Business API |
+| **IoT** | MQTT + WebSockets |
+| **AI** | Google Gemini API |
+| **Mobile** | React Native (Expo) |
+| **Monorepo** | Turborepo + npm workspaces |
+| **DevOps** | Docker Compose (local), ready for Vercel + Railway |
+
+---
+
+## Project Structure
+
+```
+medqr/
+├── apps/
+│   ├── api/        ← NestJS REST API (Backend)
+│   ├── web/        ← Next.js Web Portal (Frontend)
+│   ├── mobile/     ← React Native App (QR scanner)
+│   └── docs/       ← Documentation site
+├── packages/
+│   ├── ui/         ← Shared component library
+│   ├── eslint-config/
+│   └── typescript-config/
+├── docker-compose.yml
+├── turbo.json
+├── CODEBASE_MAP.md ← 📌 Full file-by-file documentation
+└── README.md
 ```
 
-## What's inside?
+> 📌 **See [CODEBASE_MAP.md](./CODEBASE_MAP.md) for complete file-by-file documentation of every module.**
 
-This Turborepo includes the following packages/apps:
+---
 
-### Apps and Packages
+## Key Features
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+### 👥 Role-Based Dashboards
+Each role gets a dedicated, purpose-built dashboard:
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+| Role | Route | What they see |
+|------|-------|--------------|
+| **Super Admin** | `/superadmin` | All hospital tenants, subscriptions, system health |
+| **Admin/Director** | `/dashboard/admin` | Revenue, footfall, branch performance, billing |
+| **Doctor** | `/dashboard/doctor` | Today's OPD queue, prescriptions, patient vitals |
+| **Receptionist** | `/dashboard/reception` | Patient registration, appointments, token queue |
+| **Pharmacist** | `/dashboard/pharmacy` | Pending prescriptions, medicine dispensing, stock |
 
-### Utilities
+### 🔐 Security
+- JWT authentication with role-based access control (RBAC)
+- All data isolated by `tenantId` (no cross-hospital data leakage)
+- Audit logs on every create/update/delete action
+- Password hashing with bcrypt
 
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo build
+### 🏥 Clinical Workflow
+```
+Reception registers patient (UHID assigned)
+  → Doctor sees patient in queue
+    → Doctor writes prescription
+      → Pharmacy auto-receives prescription
+        → Medicine dispensed & stock deducted
+          → Bill generated with GST
+            → Patient pays via Razorpay
+              → WhatsApp receipt sent
 ```
 
-Without global `turbo`, use your package manager:
+### 📊 Patient ID (UHID)
+Every patient gets a **Universal Health ID (UHID)** like `UHID-2024-00001` that is:
+- Visible to all roles (Doctor, Reception, Pharmacy)
+- Scannable via QR code on mobile app
+- Linked to all visits, prescriptions, and bills
 
-```sh
-cd my-turborepo
-npx turbo build
-npm dlx turbo build
-npm exec turbo build
+---
+
+## Role-Based Access
+
+```
+SUPER_ADMIN  → Can do everything across all tenants
+ADMIN        → Full access within their hospital tenant
+DOCTOR       → Patients, appointments, prescriptions, clinical notes
+RECEPTIONIST → Patient registration, appointments, billing view
+PHARMACIST   → Prescriptions, medicine stock, dispensing
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+---
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+## Getting Started
 
-```sh
-turbo build --filter=docs
+### Prerequisites
+- Node.js 18+
+- Docker Desktop (for PostgreSQL + Redis)
+- npm 9+
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/riteshcse2204/medqr.git
+cd medqr
 ```
 
-Without global `turbo`:
-
-```sh
-npx turbo build --filter=docs
-npm exec turbo build --filter=docs
-npm exec turbo build --filter=docs
+### 2. Install dependencies
+```bash
+npm install
 ```
 
-### Develop
-
-To develop all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
+### 3. Start the database
+```bash
+docker-compose up -d
+# PostgreSQL → localhost:5432
+# Redis      → localhost:6379
 ```
 
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo dev
-npm exec turbo dev
-npm exec turbo dev
+### 4. Configure environment
+```bash
+cp apps/api/.env.example apps/api/.env
+# Fill in DATABASE_URL, JWT_SECRET etc. (see below)
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo dev --filter=web
+### 5. Run database migrations
+```bash
+cd apps/api
+npx prisma migrate dev --name init
+npx prisma generate
+cd ../..
 ```
 
-Without global `turbo`:
-
-```sh
-npx turbo dev --filter=web
-npm exec turbo dev --filter=web
-npm exec turbo dev --filter=web
+### 6. Start all apps
+```bash
+npm run dev
+# Frontend: http://localhost:3000
+# Backend:  http://localhost:3001/api/v1
+# Docs:     http://localhost:3002
 ```
 
-### Remote Caching
+---
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+## Environment Variables
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+Create `apps/api/.env` with:
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+```env
+# Database
+DATABASE_URL="postgresql://postgres:password@localhost:5432/medqr?schema=public"
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+# Auth
+JWT_SECRET="your-super-secret-jwt-key-here"
 
-```sh
-cd my-turborepo
-turbo login
+# Razorpay (Payments)
+RAZORPAY_KEY_ID="rzp_test_xxxxxxxxxxxx"
+RAZORPAY_KEY_SECRET="your_razorpay_secret"
+
+# Twilio (WhatsApp)
+TWILIO_ACCOUNT_SID="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+TWILIO_AUTH_TOKEN="your_twilio_auth_token"
+TWILIO_WHATSAPP_FROM="whatsapp:+14155238886"
+
+# IoT (MQTT)
+MQTT_BROKER_URL="mqtt://localhost:1883"
+
+# AI (Google Gemini)
+GEMINI_API_KEY="your_gemini_api_key"
+
+# Redis
+REDIS_HOST="localhost"
+REDIS_PORT=6379
 ```
 
-Without global `turbo`, use your package manager:
+---
 
-```sh
-cd my-turborepo
-npx turbo login
-npm exec turbo login
-npm exec turbo login
-```
+## Full File Documentation
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+👉 See **[CODEBASE_MAP.md](./CODEBASE_MAP.md)** for a complete table of every file, its route, and what it does — organized by Frontend, Backend, and Mobile.
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+---
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+## License
 
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-npm exec turbo link
-npm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+MIT © 2024 MedQR Team

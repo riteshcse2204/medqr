@@ -52,10 +52,10 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         <nav className="flex-1 p-6 space-y-3 overflow-y-auto">
           <NavItem href="/" icon={<LayoutDashboard size={22}/>} label={t('dashboard')} active={pathname === '/'} />
           <NavItem href="/patients" icon={<Users size={22}/>} label={t('patients')} active={pathname.startsWith('/patients')} />
-          <NavItem href="/doctor/opd" icon={<Stethoscope size={22}/>} label="OPD Consultation" active={pathname.startsWith('/doctor')} />
+          <NavItem href="/dashboard/doctor" icon={<Stethoscope size={22}/>} label="OPD Consultation" active={pathname.startsWith("/dashboard/doctor")} />
           <NavItem href="/ipd" icon={<Home size={22}/>} label={t('ipd')} active={pathname.startsWith('/ipd')} />
           <NavItem href="/lab" icon={<FlaskConical size={22}/>} label={t('lab')} active={pathname.startsWith('/lab')} />
-          <NavItem href="/pharmacy" icon={<Pill size={22}/>} label={t('pharmacy')} active={pathname.startsWith('/pharmacy')} />
+          <NavItem href="/dashboard/pharmacy" icon={<Pill size={22}/>} label={t('pharmacy')} active={pathname.startsWith("/dashboard/pharmacy")} />
           <NavItem href="/billing" icon={<FileText size={22}/>} label={t('billing')} active={pathname.startsWith('/billing')} />
           <NavItem href="/iot" icon={<Activity size={22}/>} label="IoT Portal" active={pathname.startsWith('/iot')} />
           <NavItem href="/analytics/nabh" icon={<ShieldCheck size={22}/>} label="NABH Compliance" active={pathname.startsWith('/analytics/nabh')} />

@@ -21,15 +21,32 @@ export default function LoginPage() {
     setError('');
 
     try {
-      // Mocking login for UI demonstration
-      // In production, this calls the NestJS API
+      // Mocking login for UI demonstration based on email
+      let role = 'ADMIN';
+      let redirectPath = '/dashboard/admin';
+      let name = 'Admin User';
+      
+      if (email.includes('doctor')) {
+        role = 'DOCTOR';
+        redirectPath = '/dashboard/doctor';
+        name = 'Dr. Smith';
+      } else if (email.includes('pharmacy')) {
+        role = 'PHARMACY';
+        redirectPath = '/dashboard/pharmacy';
+        name = 'Pharmacy User';
+      } else if (email.includes('reception')) {
+        role = 'RECEPTION';
+        redirectPath = '/dashboard/reception';
+        name = 'Receptionist User';
+      }
+
       const response: any = { 
-        user: { id: '1', name: 'Dr. Ritesh', role: 'ADMIN', tenantId: 'tenant_1' },
+        user: { id: '1', name, role, tenantId: 'tenant_1' },
         token: 'demo_token'
       };
       
       setAuth(response.user, response.token, response.user.tenantId);
-      router.push('/dashboard/admin');
+      router.push(redirectPath);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Invalid credentials. Please try again.');
     } finally {
