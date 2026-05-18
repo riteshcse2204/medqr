@@ -125,7 +125,7 @@ export default function DoctorOPDPage() {
                 </div>
                 <div>
                   <h1 className="text-2xl font-extrabold text-slate-800">{selectedPatient.patient?.name}</h1>
-                  <p className="text-slate-500 font-medium">ID: {selectedPatient.patientId.slice(-8)} • {selectedPatient.type}</p>
+                  <p className="text-slate-500 font-medium">ID: {selectedPatient.patient?.uhid || selectedPatient.patientId.slice(-8)} • {selectedPatient.type}</p>
                 </div>
               </div>
             </div>

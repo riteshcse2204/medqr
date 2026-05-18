@@ -4,25 +4,32 @@ import React, { useState, useEffect } from 'react';
 import { 
   Pill, Search, Plus, Filter, 
   AlertTriangle, ArrowUpRight, ArrowDownRight,
-  MoreVertical, Edit, Trash2, Loader2, Package
+  MoreVertical, Edit, Trash2, Loader2, Package,
+  FileText
 } from 'lucide-react';
 import { api } from '@/lib/api';
+import { AddMedicineModal } from '@/components/AddMedicineModal';
 
 export default function PharmacyPage() {
   const [medicines, setMedicines] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [alerts, setAlerts] = useState<any[]>([]);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [activeTab, setActiveTab] = useState<'INVENTORY' | 'PRESCRIPTIONS'>('INVENTORY');
+  const [prescriptions, setPrescriptions] = useState<any[]>([]);
 
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [medsData, alertsData]: any = await Promise.all([
+      const [medsData, alertsData, rxData]: any = await Promise.all([
         api.get(`/pharmacy/medicines?search=${search}`),
-        api.get('/pharmacy/stock-alerts')
+        api.get('/pharmacy/stock-alerts'),
+        activeTab === 'PRESCRIPTIONS' ? api.get('/pharmacy/prescriptions').catch(() => []) : Promise.resolve([])
       ]);
       setMedicines(medsData);
       setAlerts(alertsData);
+      if (rxData) setPrescriptions(rxData);
     } catch (err) {
       console.error('Failed to fetch pharmacy data');
     } finally {
@@ -32,7 +39,7 @@ export default function PharmacyPage() {
 
   useEffect(() => {
     fetchData();
-  }, [search]);
+  }, [search, activeTab]);
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
@@ -44,8 +51,33 @@ export default function PharmacyPage() {
           </h1>
           <p className="text-slate-500 mt-2 text-lg">Manage medicines, stock levels, and expiry alerts.</p>
         </div>
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-2xl font-bold shadow-lg shadow-blue-600/30 transition-all flex items-center gap-2 hover:-translate-y-1">
-          <Plus size={22} /> Add New Medicine
+        {activeTab === 'INVENTORY' && (
+          <button 
+            onClick={() => setShowAddModal(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-2xl font-bold shadow-lg shadow-blue-600/30 transition-all flex items-center gap-2 hover:-translate-y-1"
+          >
+            <Plus size={22} /> Add New Medicine
+          </button>
+        )}
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-4 mb-8 border-b border-slate-200">
+        <button 
+          onClick={() => setActiveTab('INVENTORY')}
+          className={`pb-4 px-4 font-bold text-lg border-b-4 transition-all ${activeTab === 'INVENTORY' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+        >
+          <div className="flex items-center gap-2">
+            <Package size={20} /> Inventory
+          </div>
+        </button>
+        <button 
+          onClick={() => setActiveTab('PRESCRIPTIONS')}
+          className={`pb-4 px-4 font-bold text-lg border-b-4 transition-all ${activeTab === 'PRESCRIPTIONS' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+        >
+          <div className="flex items-center gap-2">
+            <FileText size={20} /> Doctor Prescriptions
+          </div>
         </button>
       </div>
 
@@ -127,7 +159,7 @@ export default function PharmacyPage() {
                         <span className="text-[10px] font-bold text-slate-400 uppercase">Min: {med.minStock}</span>
                       </div>
                     </td>
-                    <td className="px-8 py-6 font-extrabold text-slate-800">₹{med.mrp}</td>
+                    <td className="px-8 py-6 font-extrabold text-slate-800">₹{med.price}</td>
                     <td className="px-8 py-6">
                       <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-tight ${med.isActive ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'}`}>
                         {med.isActive ? 'Active' : 'Inactive'}
@@ -152,6 +184,55 @@ export default function PharmacyPage() {
           </div>
         )}
       </div>
+      
+      {activeTab === 'PRESCRIPTIONS' && (
+        <div className="bg-white rounded-[32px] border border-slate-200 shadow-sm overflow-hidden p-8 mt-8">
+          <h2 className="text-2xl font-bold text-slate-800 mb-6">Recent Prescriptions</h2>
+          {prescriptions.length === 0 ? (
+            <div className="p-20 text-center text-slate-400 bg-slate-50 rounded-3xl border border-dashed border-slate-200">
+              <FileText size={48} className="mx-auto mb-4 opacity-50" />
+              <p>No prescriptions have been sent by the doctors yet.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {prescriptions.map((rx: any) => (
+                <div key={rx.id} className="border border-slate-100 rounded-2xl p-6 hover:shadow-lg transition-all bg-slate-50">
+                   <div className="flex justify-between items-start mb-4">
+                     <div>
+                       <h3 className="font-bold text-lg text-slate-800">
+                         {rx.patient?.name || 'Unknown Patient'} 
+                         <span className="text-xs text-slate-400 font-normal ml-2">({rx.patient?.uhid || 'No UHID'})</span>
+                       </h3>
+                       <p className="text-sm text-slate-500">Dr. {rx.doctor?.name || 'Unknown Doctor'}</p>
+                     </div>
+                     <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold uppercase">
+                       {rx.status}
+                     </span>
+                   </div>
+                   <div className="space-y-2 mt-4">
+                     {JSON.parse(rx.medicines || '[]').map((m: any, idx: number) => (
+                       <div key={idx} className="flex justify-between items-center text-sm p-2 bg-white rounded-lg border border-slate-100">
+                         <span className="font-semibold text-slate-700">{m.name}</span>
+                         <span className="text-slate-500">{m.dosage} x {m.duration} days</span>
+                       </div>
+                     ))}
+                   </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {showAddModal && (
+        <AddMedicineModal 
+          onClose={() => setShowAddModal(false)} 
+          onSuccess={() => {
+            setShowAddModal(false);
+            fetchData();
+          }} 
+        />
+      )}
     </div>
   );
 }

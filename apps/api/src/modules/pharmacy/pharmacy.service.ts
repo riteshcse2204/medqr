@@ -11,7 +11,6 @@ export class PharmacyService {
       data: {
         ...dto,
         tenantId,
-        createdBy: userId,
       },
     });
   }
@@ -69,6 +68,18 @@ export class PharmacyService {
         isActive: true,
         deletedAt: null,
       },
+    });
+  }
+
+  async getPrescriptions(tenantId: string) {
+    return this.prisma.prescription.findMany({
+      where: { tenantId },
+      include: {
+        patient: { select: { name: true, uhid: true } },
+        doctor: { select: { name: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 50,
     });
   }
 }

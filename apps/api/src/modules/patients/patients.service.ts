@@ -7,10 +7,12 @@ export class PatientsService {
   constructor(private prisma: PrismaService) {}
 
   async create(tenantId: string, userId: string, dto: CreatePatientDto) {
+    const uhid = `UHID-${Date.now().toString().slice(-6)}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
     const patient = await this.prisma.patient.create({
       data: {
         ...dto,
         dob: dto.dob ? new Date(dto.dob) : undefined,
+        uhid,
         tenantId,
         createdBy: userId,
       },

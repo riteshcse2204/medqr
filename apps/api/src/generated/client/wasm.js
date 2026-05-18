@@ -116,9 +116,6 @@ Prisma.NullTypes = {
  */
 
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
-  ReadUncommitted: 'ReadUncommitted',
-  ReadCommitted: 'ReadCommitted',
-  RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 });
 
@@ -135,9 +132,23 @@ exports.Prisma.TenantScalarFieldEnum = {
   deletedAt: 'deletedAt'
 };
 
+exports.Prisma.BranchScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  address: 'address',
+  phone: 'phone',
+  email: 'email',
+  isActive: 'isActive',
+  isMain: 'isMain',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
+  branchId: 'branchId',
   email: 'email',
   password: 'password',
   name: 'name',
@@ -185,154 +196,10 @@ exports.Prisma.PayrollScalarFieldEnum = {
   paidAt: 'paidAt'
 };
 
-exports.Prisma.PatientScalarFieldEnum = {
-  id: 'id',
-  tenantId: 'tenantId',
-  name: 'name',
-  phone: 'phone',
-  email: 'email',
-  abhaId: 'abhaId',
-  gender: 'gender',
-  dob: 'dob',
-  bloodGroup: 'bloodGroup',
-  address: 'address',
-  photoUrl: 'photoUrl',
-  qrCode: 'qrCode',
-  createdBy: 'createdBy',
-  updatedBy: 'updatedBy',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  deletedAt: 'deletedAt'
-};
-
-exports.Prisma.DoctorScalarFieldEnum = {
-  id: 'id',
-  tenantId: 'tenantId',
-  name: 'name',
-  specialization: 'specialization',
-  phone: 'phone',
-  email: 'email',
-  registrationNo: 'registrationNo',
-  consultFee: 'consultFee',
-  isActive: 'isActive',
-  createdBy: 'createdBy',
-  updatedBy: 'updatedBy',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  deletedAt: 'deletedAt'
-};
-
-exports.Prisma.AppointmentScalarFieldEnum = {
-  id: 'id',
-  tenantId: 'tenantId',
-  patientId: 'patientId',
-  doctorId: 'doctorId',
-  date: 'date',
-  timeSlot: 'timeSlot',
-  status: 'status',
-  type: 'type',
-  reason: 'reason',
-  notes: 'notes',
-  queueNo: 'queueNo',
-  tokenNo: 'tokenNo',
-  createdBy: 'createdBy',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  deletedAt: 'deletedAt'
-};
-
-exports.Prisma.TelemedicineSessionScalarFieldEnum = {
-  id: 'id',
-  appointmentId: 'appointmentId',
-  meetingLink: 'meetingLink',
-  startTime: 'startTime',
-  endTime: 'endTime',
-  status: 'status'
-};
-
-exports.Prisma.EncounterScalarFieldEnum = {
-  id: 'id',
-  tenantId: 'tenantId',
-  patientId: 'patientId',
-  doctorId: 'doctorId',
-  appointmentId: 'appointmentId',
-  type: 'type',
-  vitals: 'vitals',
-  diagnosis: 'diagnosis',
-  notes: 'notes',
-  createdBy: 'createdBy',
-  updatedBy: 'updatedBy',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  deletedAt: 'deletedAt'
-};
-
-exports.Prisma.PrescriptionScalarFieldEnum = {
-  id: 'id',
-  tenantId: 'tenantId',
-  patientId: 'patientId',
-  doctorId: 'doctorId',
-  encounterId: 'encounterId',
-  notes: 'notes',
-  createdBy: 'createdBy',
-  updatedBy: 'updatedBy',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  deletedAt: 'deletedAt'
-};
-
-exports.Prisma.PrescriptionItemScalarFieldEnum = {
-  id: 'id',
-  prescriptionId: 'prescriptionId',
-  medicineId: 'medicineId',
-  medicineName: 'medicineName',
-  dosage: 'dosage',
-  frequency: 'frequency',
-  duration: 'duration',
-  instructions: 'instructions'
-};
-
-exports.Prisma.BillScalarFieldEnum = {
-  id: 'id',
-  tenantId: 'tenantId',
-  patientId: 'patientId',
-  billNo: 'billNo',
-  totalAmount: 'totalAmount',
-  paidAmount: 'paidAmount',
-  discount: 'discount',
-  status: 'status',
-  paymentMode: 'paymentMode',
-  notes: 'notes',
-  createdBy: 'createdBy',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  deletedAt: 'deletedAt'
-};
-
-exports.Prisma.WardScalarFieldEnum = {
-  id: 'id',
-  tenantId: 'tenantId',
-  name: 'name',
-  type: 'type',
-  floor: 'floor',
-  createdBy: 'createdBy',
-  updatedBy: 'updatedBy',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  deletedAt: 'deletedAt'
-};
-
-exports.Prisma.BedScalarFieldEnum = {
-  id: 'id',
-  tenantId: 'tenantId',
-  wardId: 'wardId',
-  bedNumber: 'bedNumber',
-  status: 'status'
-};
-
 exports.Prisma.IpdAdmissionScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
+  branchId: 'branchId',
   patientId: 'patientId',
   doctorId: 'doctorId',
   bedId: 'bedId',
@@ -351,70 +218,15 @@ exports.Prisma.IpdAdmissionScalarFieldEnum = {
 exports.Prisma.LabOrderScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
+  branchId: 'branchId',
   patientId: 'patientId',
   doctorId: 'doctorId',
-  encounterId: 'encounterId',
   testName: 'testName',
   status: 'status',
-  priority: 'priority',
-  notes: 'notes',
-  createdBy: 'createdBy',
-  updatedBy: 'updatedBy',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  deletedAt: 'deletedAt'
-};
-
-exports.Prisma.LabResultScalarFieldEnum = {
-  id: 'id',
-  orderId: 'orderId',
-  parameter: 'parameter',
-  value: 'value',
-  unit: 'unit',
-  referenceRange: 'referenceRange',
-  isAbnormal: 'isAbnormal',
+  result: 'result',
   notes: 'notes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
-};
-
-exports.Prisma.BillItemScalarFieldEnum = {
-  id: 'id',
-  billId: 'billId',
-  description: 'description',
-  quantity: 'quantity',
-  unitPrice: 'unitPrice',
-  total: 'total'
-};
-
-exports.Prisma.MedicineScalarFieldEnum = {
-  id: 'id',
-  tenantId: 'tenantId',
-  name: 'name',
-  genericName: 'genericName',
-  category: 'category',
-  unit: 'unit',
-  mrp: 'mrp',
-  stock: 'stock',
-  minStock: 'minStock',
-  isActive: 'isActive',
-  createdBy: 'createdBy',
-  updatedBy: 'updatedBy',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  deletedAt: 'deletedAt'
-};
-
-exports.Prisma.AuditLogScalarFieldEnum = {
-  id: 'id',
-  tenantId: 'tenantId',
-  userId: 'userId',
-  action: 'action',
-  entity: 'entity',
-  entityId: 'entityId',
-  changes: 'changes',
-  ipAddress: 'ipAddress',
-  createdAt: 'createdAt'
 };
 
 exports.Prisma.SupplierScalarFieldEnum = {
@@ -441,19 +253,214 @@ exports.Prisma.PurchaseOrderScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.IotDeviceScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  branchId: 'branchId',
+  name: 'name',
+  type: 'type',
+  macAddress: 'macAddress',
+  isActive: 'isActive',
+  lastSeen: 'lastSeen'
+};
+
+exports.Prisma.IotReadingScalarFieldEnum = {
+  id: 'id',
+  deviceId: 'deviceId',
+  patientId: 'patientId',
+  value: 'value',
+  timestamp: 'timestamp'
+};
+
+exports.Prisma.PatientScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  branchId: 'branchId',
+  name: 'name',
+  phone: 'phone',
+  email: 'email',
+  uhid: 'uhid',
+  abhaId: 'abhaId',
+  abhaHistory: 'abhaHistory',
+  gender: 'gender',
+  dob: 'dob',
+  bloodGroup: 'bloodGroup',
+  address: 'address',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+};
+
+exports.Prisma.DoctorScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  branchId: 'branchId',
+  name: 'name',
+  specialization: 'specialization',
+  phone: 'phone',
+  email: 'email',
+  registrationNo: 'registrationNo',
+  consultFee: 'consultFee',
+  isActive: 'isActive',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+};
+
+exports.Prisma.AppointmentScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  branchId: 'branchId',
+  patientId: 'patientId',
+  doctorId: 'doctorId',
+  date: 'date',
+  timeSlot: 'timeSlot',
+  status: 'status',
+  type: 'type',
+  reason: 'reason',
+  notes: 'notes',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+};
+
+exports.Prisma.EncounterScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  branchId: 'branchId',
+  patientId: 'patientId',
+  doctorId: 'doctorId',
+  chiefComplaints: 'chiefComplaints',
+  diagnosis: 'diagnosis',
+  vitals: 'vitals',
+  notes: 'notes',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PrescriptionScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  branchId: 'branchId',
+  patientId: 'patientId',
+  doctorId: 'doctorId',
+  encounterId: 'encounterId',
+  medicines: 'medicines',
+  notes: 'notes',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.BillScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  patientId: 'patientId',
+  branchId: 'branchId',
+  billNo: 'billNo',
+  totalAmount: 'totalAmount',
+  taxableAmount: 'taxableAmount',
+  cgst: 'cgst',
+  sgst: 'sgst',
+  igst: 'igst',
+  paidAmount: 'paidAmount',
+  discount: 'discount',
+  status: 'status',
+  paymentMode: 'paymentMode',
+  transactionId: 'transactionId',
+  irn: 'irn',
+  ackNo: 'ackNo',
+  notes: 'notes',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+};
+
+exports.Prisma.BillItemScalarFieldEnum = {
+  id: 'id',
+  billId: 'billId',
+  description: 'description',
+  hsnCode: 'hsnCode',
+  quantity: 'quantity',
+  unitPrice: 'unitPrice',
+  gstRate: 'gstRate',
+  gstAmount: 'gstAmount',
+  total: 'total'
+};
+
+exports.Prisma.PaymentScalarFieldEnum = {
+  id: 'id',
+  billId: 'billId',
+  amount: 'amount',
+  method: 'method',
+  provider: 'provider',
+  transactionId: 'transactionId',
+  status: 'status',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.MedicineScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  branchId: 'branchId',
+  name: 'name',
+  genericName: 'genericName',
+  category: 'category',
+  manufacturer: 'manufacturer',
+  price: 'price',
+  stock: 'stock',
+  minStock: 'minStock',
+  expiryDate: 'expiryDate',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+};
+
+exports.Prisma.WardScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  branchId: 'branchId',
+  name: 'name',
+  type: 'type',
+  floor: 'floor',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+};
+
+exports.Prisma.BedScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  branchId: 'branchId',
+  wardId: 'wardId',
+  bedNumber: 'bedNumber',
+  status: 'status'
+};
+
+exports.Prisma.TelemedicineSessionScalarFieldEnum = {
+  id: 'id',
+  appointmentId: 'appointmentId',
+  roomName: 'roomName',
+  token: 'token',
+  status: 'status',
+  startedAt: 'startedAt',
+  endedAt: 'endedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
-};
-
-exports.Prisma.NullableJsonNullValueInput = {
-  DbNull: Prisma.DbNull,
-  JsonNull: Prisma.JsonNull
-};
-
-exports.Prisma.QueryMode = {
-  default: 'default',
-  insensitive: 'insensitive'
 };
 
 exports.Prisma.NullsOrder = {
@@ -461,142 +468,32 @@ exports.Prisma.NullsOrder = {
   last: 'last'
 };
 
-exports.Prisma.JsonNullValueFilter = {
-  DbNull: Prisma.DbNull,
-  JsonNull: Prisma.JsonNull,
-  AnyNull: Prisma.AnyNull
-};
-exports.Role = exports.$Enums.Role = {
-  SUPER_ADMIN: 'SUPER_ADMIN',
-  HOSPITAL_ADMIN: 'HOSPITAL_ADMIN',
-  DOCTOR: 'DOCTOR',
-  NURSE: 'NURSE',
-  RECEPTIONIST: 'RECEPTIONIST',
-  PHARMACIST: 'PHARMACIST',
-  LAB_TECH: 'LAB_TECH',
-  BILLING_STAFF: 'BILLING_STAFF'
-};
-
-exports.AttendanceStatus = exports.$Enums.AttendanceStatus = {
-  PRESENT: 'PRESENT',
-  ABSENT: 'ABSENT',
-  LEAVE: 'LEAVE',
-  LATE: 'LATE'
-};
-
-exports.PayrollStatus = exports.$Enums.PayrollStatus = {
-  PENDING: 'PENDING',
-  PROCESSING: 'PROCESSING',
-  PAID: 'PAID',
-  CANCELLED: 'CANCELLED'
-};
-
-exports.Gender = exports.$Enums.Gender = {
-  MALE: 'MALE',
-  FEMALE: 'FEMALE',
-  OTHER: 'OTHER'
-};
-
-exports.AppointmentStatus = exports.$Enums.AppointmentStatus = {
-  SCHEDULED: 'SCHEDULED',
-  WAITING: 'WAITING',
-  IN_PROGRESS: 'IN_PROGRESS',
-  COMPLETED: 'COMPLETED',
-  CANCELLED: 'CANCELLED',
-  NO_SHOW: 'NO_SHOW'
-};
-
-exports.AppointmentType = exports.$Enums.AppointmentType = {
-  REGULAR: 'REGULAR',
-  EMERGENCY: 'EMERGENCY',
-  FOLLOW_UP: 'FOLLOW_UP',
-  TELECONSULT: 'TELECONSULT'
-};
-
-exports.TelemedicineStatus = exports.$Enums.TelemedicineStatus = {
-  SCHEDULED: 'SCHEDULED',
-  STARTED: 'STARTED',
-  COMPLETED: 'COMPLETED',
-  CANCELLED: 'CANCELLED'
-};
-
-exports.EncounterType = exports.$Enums.EncounterType = {
-  OPD: 'OPD',
-  IPD: 'IPD',
-  EMERGENCY: 'EMERGENCY',
-  TELECONSULT: 'TELECONSULT'
-};
-
-exports.BillStatus = exports.$Enums.BillStatus = {
-  PENDING: 'PENDING',
-  PARTIAL: 'PARTIAL',
-  PAID: 'PAID',
-  REFUNDED: 'REFUNDED',
-  CANCELLED: 'CANCELLED'
-};
-
-exports.WardType = exports.$Enums.WardType = {
-  GENERAL: 'GENERAL',
-  SEMI_PRIVATE: 'SEMI_PRIVATE',
-  PRIVATE: 'PRIVATE',
-  ICU: 'ICU',
-  NICU: 'NICU',
-  OT: 'OT'
-};
-
-exports.BedStatus = exports.$Enums.BedStatus = {
-  AVAILABLE: 'AVAILABLE',
-  OCCUPIED: 'OCCUPIED',
-  MAINTENANCE: 'MAINTENANCE',
-  CLEANING: 'CLEANING'
-};
-
-exports.AdmissionStatus = exports.$Enums.AdmissionStatus = {
-  ADMITTED: 'ADMITTED',
-  DISCHARGED: 'DISCHARGED',
-  TRANSFERRED: 'TRANSFERRED',
-  CANCELLED: 'CANCELLED'
-};
-
-exports.LabStatus = exports.$Enums.LabStatus = {
-  PENDING: 'PENDING',
-  COLLECTED: 'COLLECTED',
-  PROCESSING: 'PROCESSING',
-  COMPLETED: 'COMPLETED',
-  CANCELLED: 'CANCELLED'
-};
-
-exports.PoStatus = exports.$Enums.PoStatus = {
-  PENDING: 'PENDING',
-  ORDERED: 'ORDERED',
-  RECEIVED: 'RECEIVED',
-  CANCELLED: 'CANCELLED'
-};
 
 exports.Prisma.ModelName = {
   Tenant: 'Tenant',
+  Branch: 'Branch',
   User: 'User',
   StaffProfile: 'StaffProfile',
   Attendance: 'Attendance',
   Payroll: 'Payroll',
+  IpdAdmission: 'IpdAdmission',
+  LabOrder: 'LabOrder',
+  Supplier: 'Supplier',
+  PurchaseOrder: 'PurchaseOrder',
+  IotDevice: 'IotDevice',
+  IotReading: 'IotReading',
   Patient: 'Patient',
   Doctor: 'Doctor',
   Appointment: 'Appointment',
-  TelemedicineSession: 'TelemedicineSession',
   Encounter: 'Encounter',
   Prescription: 'Prescription',
-  PrescriptionItem: 'PrescriptionItem',
   Bill: 'Bill',
+  BillItem: 'BillItem',
+  Payment: 'Payment',
+  Medicine: 'Medicine',
   Ward: 'Ward',
   Bed: 'Bed',
-  IpdAdmission: 'IpdAdmission',
-  LabOrder: 'LabOrder',
-  LabResult: 'LabResult',
-  BillItem: 'BillItem',
-  Medicine: 'Medicine',
-  AuditLog: 'AuditLog',
-  Supplier: 'Supplier',
-  PurchaseOrder: 'PurchaseOrder'
+  TelemedicineSession: 'TelemedicineSession'
 };
 
 /**

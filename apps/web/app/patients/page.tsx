@@ -104,7 +104,7 @@ export default function PatientsPage() {
                         </div>
                         <div>
                           <h4 className="font-bold text-slate-800">{pt.name}</h4>
-                          <p className="text-[10px] font-black text-slate-300 uppercase tracking-tighter">ID: {pt.id.slice(-6)}</p>
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">ID: {pt.uhid || pt.id.slice(-6)}</p>
                         </div>
                       </div>
                     </td>

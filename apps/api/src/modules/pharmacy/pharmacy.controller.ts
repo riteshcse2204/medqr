@@ -56,4 +56,11 @@ export class PharmacyController {
   getStockAlerts(@Tenant() tenantId: string) {
     return this.pharmacyService.getStockAlerts(tenantId);
   }
+
+  @Get('prescriptions')
+  @Roles(Role.PHARMACIST, Role.HOSPITAL_ADMIN)
+  @ApiOperation({ summary: 'Get recent prescriptions sent to the pharmacy' })
+  getPrescriptions(@Tenant() tenantId: string) {
+    return this.pharmacyService.getPrescriptions(tenantId);
+  }
 }

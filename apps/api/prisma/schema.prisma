@@ -272,6 +272,7 @@ model Patient {
   name        String
   phone       String
   email       String?
+  uhid        String?  @unique
   abhaId      String?
   abhaHistory String?    
   gender      String
@@ -284,6 +285,7 @@ model Patient {
   prescriptions Prescription[]
   admissions   IpdAdmission[]
   labOrders    LabOrder[]
+  bills        Bill[]
 
   createdBy  String?
   updatedBy  String?

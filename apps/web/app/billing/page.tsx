@@ -5,7 +5,7 @@ import {
   FileText, Search, Plus, Filter, 
   Download, Printer, CheckCircle, 
   CreditCard, Smartphone, Banknote,
-  ChevronRight, MoreVertical, Loader2
+  ChevronRight, MoreVertical, Loader2, Activity
 } from 'lucide-react';
 import { api } from '@/lib/api';
 
